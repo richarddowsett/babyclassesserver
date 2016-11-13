@@ -1,4 +1,4 @@
-name := """baby-classes"""
+name := """babyclasses-server"""
 organization := "proactiveoak"
 
 version := "1.0-SNAPSHOT"
