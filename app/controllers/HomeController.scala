@@ -3,6 +3,8 @@ package controllers
 import javax.inject.{Named => _, _}
 
 import com.google.inject.name.Named
+import controllers.database.ClassesDaoLike
+import model.BabyClass
 import org.mongodb.scala.MongoCollection
 import org.mongodb.scala.bson.collection.immutable.Document
 import play.api.libs.functional.syntax._
@@ -14,9 +16,9 @@ import play.api.mvc._
  * application's home page.
  */
 @Singleton
-class HomeController @Inject() (collection: MongoCollection[Document]) extends Controller {
+class HomeController @Inject() (dao: ClassesDaoLike) extends Controller {
 
-  case class BabyClass(category: String, activity: String, postcode: String)
+
 
   implicit val BabyClassWrites: Writes[BabyClass] = (
     (JsPath \ "category").write[String] and
@@ -32,7 +34,7 @@ class HomeController @Inject() (collection: MongoCollection[Document]) extends C
    * a path of `/`.
    */
   def index = Action { implicit request => {
-    val ret = Json.toJson(new BabyClass("Baby", "Swimming", "CM1"))
+    val ret = Json.toJson(dao.loadAllClasses())
     Ok(ret)
   }
   }

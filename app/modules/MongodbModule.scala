@@ -2,7 +2,9 @@ package modules
 
 import com.google.inject.name.{Named, Names}
 import com.google.inject.{AbstractModule, TypeLiteral}
-import org.mongodb.scala.bson.collection.immutable.Document
+import controllers.database.{ClassesDao, ClassesDaoLike}
+import model.BabyClass
+import org.bson.codecs.configuration.CodecRegistries
 import org.mongodb.scala.{MongoClient, MongoCollection}
 import play.api.Configuration
 import play.api.Environment
@@ -16,6 +18,8 @@ class MongodbModule(environment: Environment,configuration: Configuration) exten
 
   val hostConfig = configuration.getString("mongodb.host")
   val portConfig = configuration.getString("mongodb.port")
+val babyClassCodec = new BabyClassCodec()
+  val babyClassCodecRegistry = CodecRegistries.fromCodecs(babyClassCodec)
 
 
   override def configure(): Unit = {
@@ -27,10 +31,14 @@ class MongodbModule(environment: Environment,configuration: Configuration) exten
         MongoClient(s"mongodb://$host:$port")
       }
 
-    val collectionDisj = mongoClient.map(c => c.getDatabase("classfinder").getCollection("classes"))
+    val collectionDisj = mongoClient.map(c => c.getDatabase("classfinder").getCollection[BabyClass]("classes")).map(c =>{
+    c.withCodecRegistry(babyClassCodecRegistry)
+  })
 
     collectionDisj.fold(l => addError(l),
-      collection => bind(new TypeLiteral[MongoCollection[Document]]{}).toInstance(collection))
+      collection => bind(new TypeLiteral[MongoCollection[BabyClass]]{}).toInstance(collection))
+
+    bind(classOf[ClassesDaoLike]).to(classOf[ClassesDao])
   }
 
   implicit class Disjunc[T](opt: Option[T]) {
