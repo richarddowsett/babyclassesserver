@@ -3,7 +3,7 @@ package controllers.database
 import javax.inject.{Inject, Singleton}
 
 import model.BabyClass
-import org.mongodb.scala.{Document, MongoCollection, Observer}
+import org.mongodb.scala.{Completed, Document, MongoCollection, Observer}
 import org.mongodb.scala.bson.BsonDocument
 import org.mongodb.scala.bson.collection.immutable.Document
 
@@ -31,11 +31,21 @@ class ClassesDao @Inject()(collection: MongoCollection[BabyClass]) extends Class
       }
     }
     collection.find[BabyClass]().subscribe(observer)
-    while (!observer.complete) { // change this to a future and a promise
+    while (!observer.complete) {
+      // change this to a future and a promise
 
     }
     observer.list
   }
 
-  override def addClass(babyClass: BabyClass): Unit = ???
+  override def addClass(babyClass: BabyClass): Unit = {
+    println(s"starting to insert: $babyClass")
+    var complete = false
+    collection.insertOne(babyClass).subscribe((c: Completed) => {
+      println(s"c: completed -> $c -> inserted: $babyClass")
+      complete = true
+    })
+    while (!complete) {}
+
+  }
 }
