@@ -1,7 +1,10 @@
 package controllers
 
-import javax.inject._
+import javax.inject.{Named => _, _}
 
+import com.google.inject.name.Named
+import org.mongodb.scala.MongoCollection
+import org.mongodb.scala.bson.collection.immutable.Document
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import play.api.mvc._
@@ -11,7 +14,7 @@ import play.api.mvc._
  * application's home page.
  */
 @Singleton
-class HomeController @Inject() extends Controller {
+class HomeController @Inject() (collection: MongoCollection[Document]) extends Controller {
 
   case class BabyClass(category: String, activity: String, postcode: String)
 
@@ -33,6 +36,11 @@ class HomeController @Inject() extends Controller {
     Ok(ret)
   }
   }
+
+  def classesForLatLong(lat:String, long:String) = Action {implicit request => {
+    val ret = Json.toJson(List(new BabyClass(lat, long, "CM1")))
+    Ok(ret)
+  }}
 
   def classes = Action { implicit request => {
     val ret = Json.toJson(List(new BabyClass("Baby", "Swimming", "CM1"),new BabyClass("Baby", "Massage", "CM1")) )
