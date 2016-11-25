@@ -7,11 +7,15 @@ import org.mongodb.scala.{Completed, Document, MongoCollection, Observer}
 import org.mongodb.scala.bson.BsonDocument
 import org.mongodb.scala.bson.collection.immutable.Document
 
+import scala.concurrent.{Future, Promise}
+
 trait ClassesDaoLike {
+  def count():Future[Long]
+
 
   def loadAllClasses(): List[BabyClass]
 
-  def addClass(babyClass: BabyClass): Unit
+  def addClass(babyClass: BabyClass): Future[String]
 
 }
 
@@ -38,14 +42,15 @@ class ClassesDao @Inject()(collection: MongoCollection[BabyClass]) extends Class
     observer.list
   }
 
-  override def addClass(babyClass: BabyClass): Unit = {
+  override def addClass(babyClass: BabyClass): Future[String] = {
     println(s"starting to insert: $babyClass")
-    var complete = false
+    val promise = Promise[String]()
     collection.insertOne(babyClass).subscribe((c: Completed) => {
-      println(s"c: completed -> $c -> inserted: $babyClass")
-      complete = true
+      promise.success("baby class inserted")
     })
-    while (!complete) {}
+    promise.future
 
   }
+
+  override def count(): Future[Long] = collection.count().head()
 }

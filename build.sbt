@@ -18,8 +18,6 @@ libraryDependencies += "com.typesafe.play" %% "play" % "2.5.9"
 libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "1.1.1"
 libraryDependencies += "com.typesafe" % "config" % "1.3.1"
 libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.2.7"
-libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.1"
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "proactiveoak.controllers._"

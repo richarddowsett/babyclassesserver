@@ -1,11 +1,14 @@
 package modules
 
+import java.util.concurrent.TimeUnit
+
 import com.google.inject.name.{Named, Names}
 import com.google.inject.{AbstractModule, TypeLiteral}
+import com.mongodb.client.model.CreateCollectionOptions
 import controllers.database.{ClassesDao, ClassesDaoLike}
 import model.BabyClass
 import org.bson.codecs.configuration.CodecRegistries
-import org.mongodb.scala.{MongoClient, MongoCollection}
+import org.mongodb.scala.{Completed, MongoClient, MongoCollection, WriteConcern}
 import play.api.Configuration
 import play.api.Environment
 
@@ -22,6 +25,7 @@ val babyClassCodec = new BabyClassCodec()
   val babyClassCodecRegistry = CodecRegistries.fromCodecs(babyClassCodec)
 
 
+
   override def configure(): Unit = {
     val mongoClient = for {
       host <- hostConfig.toDisjunction("Cannot find host config")
@@ -30,9 +34,18 @@ val babyClassCodec = new BabyClassCodec()
       yield {
         MongoClient(s"mongodb://$host:$port")
       }
-
-    val collectionDisj = mongoClient.map(c => c.getDatabase("classfinder").getCollection[BabyClass]("classes")).map(c =>{
-    c.withCodecRegistry(babyClassCodecRegistry)
+    val collectionDisj = mongoClient.map({c => val db = c.getDatabase("classfinder")
+      var created = false
+//      db.createCollection("classes").subscribe((c:Completed) => {
+//          println("collection created")
+//        created = true
+//      })
+//      while(!created){
+//
+//      }
+      db.getCollection[BabyClass]("classes")}).map(c =>{
+    c.withCodecRegistry(babyClassCodecRegistry).withWriteConcern(WriteConcern.UNACKNOWLEDGED
+      .withJournal(false).withWTimeout(30, TimeUnit.SECONDS))
   })
 
     collectionDisj.fold(l => addError(l),
