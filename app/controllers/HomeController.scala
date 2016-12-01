@@ -5,7 +5,7 @@ import javax.inject.{Named => _, _}
 
 import com.google.inject.name.Named
 import controllers.database.ClassesDaoLike
-import model.BabyClass
+import model.{BabyClass, Category}
 import org.mongodb.scala.MongoCollection
 import org.mongodb.scala.bson.collection.immutable.Document
 import play.api.libs.functional.syntax._
@@ -29,19 +29,7 @@ class HomeController @Inject()(dao: ClassesDaoLike) extends Controller {
     }
   }
 
-  implicit val BabyClassWrites: Writes[BabyClass] = (
-    (JsPath \ "_id").write[String] and
-    (JsPath \ "category").write[String] and
-      (JsPath \ "activity").write[String] and
-      (JsPath \ "postcode").write[String]
-    ) (unlift(BabyClass.unapply))
 
-  implicit val BabyClassReads: Reads[BabyClass] = (
-    (JsPath \ "_id").read[String] and
-    (JsPath \ "category").read[String] and
-      (JsPath \ "activity").read[String] and
-      (JsPath \ "postcode").read[String]
-    ).apply(BabyClass.apply _)
 
   /**
     * Create an Action to render an HTML page.
@@ -61,7 +49,7 @@ class HomeController @Inject()(dao: ClassesDaoLike) extends Controller {
       println(s"found an error while parsing json: $e")
       BadRequest(Json.obj("error" -> "parsing error", "success" -> false))
     }, r => {
-      Try(Await.result(dao.addClass(r), Duration(10, TimeUnit.SECONDS))) match {
+      Try(Await.result(dao.addClass(r.copy(_id = Random.alphanumeric.take(5).mkString(""))), Duration(10, TimeUnit.SECONDS))) match {
         case Success(result) => println(result)
           Ok(Json.obj("success" -> true))
         case Failure(f) => println(f)
@@ -72,8 +60,8 @@ class HomeController @Inject()(dao: ClassesDaoLike) extends Controller {
   }
 
   def classesForLatLong(lat: String, long: String) = Action { implicit request => {
-    val ret = Json.toJson(List(new BabyClass("123", lat, long, "CM1")))
-    Ok(ret)
+//    val ret = Json.toJson(List(new BabyClass("123", lat, long, "CM1")))
+    BadRequest(Json.obj("error" -> "not implemented"))
   }
   }
 
