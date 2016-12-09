@@ -5,6 +5,8 @@
 
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index
+OPTIONS /                           controllers.OptionsController.options(path="")
+OPTIONS /*path                      controllers.OptionsController.options(path)
 
 GET     /classes                    controllers.HomeController.classes
 
