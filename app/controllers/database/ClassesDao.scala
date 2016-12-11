@@ -2,7 +2,7 @@ package controllers.database
 
 import javax.inject.{Inject, Singleton}
 
-import model.BabyClass
+import model.{Category, BabyClass}
 import org.mongodb.scala.{Completed, Document, MongoCollection, Observer}
 import org.mongodb.scala.bson.BsonDocument
 import org.mongodb.scala.bson.collection.immutable.Document
@@ -22,7 +22,7 @@ trait ClassesDaoLike {
 @Singleton
 class ClassesDao @Inject()(collection: MongoCollection[BabyClass]) extends ClassesDaoLike {
 
-  var list:List[BabyClass] = List.empty[BabyClass]
+  var list:List[BabyClass] = List(BabyClass("1234", Category.Baby, "Yoga", "CM1"), BabyClass("4566", Category.Pregnancy, "Yoga", "CM1"))
 
   override def loadAllClasses(): List[BabyClass] = {
     list
