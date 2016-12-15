@@ -4,6 +4,7 @@ import model.BabyClass
 import model.Category
 import org.bson.{BsonReader, BsonWriter}
 import org.bson.codecs.{Codec, DecoderContext, EncoderContext}
+import org.bson.json.JsonReader
 import syntax.DisjunctionOps._
 
 /**
@@ -14,14 +15,17 @@ class BabyClassCodec extends Codec[BabyClass] {
     val id = reader.readString("_id")
     val category = reader.readString("category")
     val activity = reader.readString("activity")
-    val postcode = reader.readString("postcode")
-    BabyClass(id, Category(category).getOrThrow(), activity, postcode)
+    //val postcode = reader.readS
+
+    // readStartDocument
+    //BabyClass(id, Category(category).getOrThrow(), activity, postcode)
+    null
   }
 
   override def encode(writer: BsonWriter, value: BabyClass, encoderContext: EncoderContext): Unit = {
     writer.writeString("category", value.category.category)
     writer.writeString("activity", value.activity)
-    writer.writeString("postcode", value.postcode)
+    //writer.writeString("postcode", value.postcode)
     writer.writeString("_id", value._id)
   }
 

@@ -2,7 +2,7 @@ package controllers.database
 
 import javax.inject.{Inject, Singleton}
 
-import model.{Category, BabyClass}
+import model.{Category, BabyClass, Address}
 import org.mongodb.scala.{Completed, Document, MongoCollection, Observer}
 import org.mongodb.scala.bson.BsonDocument
 import org.mongodb.scala.bson.collection.immutable.Document
@@ -22,7 +22,8 @@ trait ClassesDaoLike {
 @Singleton
 class ClassesDao @Inject()(collection: MongoCollection[BabyClass]) extends ClassesDaoLike {
 
-  var list:List[BabyClass] = List(BabyClass("1234", Category.Baby, "Yoga", "CM1"), BabyClass("4566", Category.Pregnancy, "Yoga", "CM1"))
+  var list:List[BabyClass] = List(BabyClass("1234", Category.Baby, "Yoga", Address("5", "Oakland Gardens", Option("Hutton"), "Brentwood", "CM131EN")),
+    BabyClass("4566", Category.Pregnancy, "Yoga", Address("3", "Oakland Gardens", Option("Hutton"), "Brentwood", "CM131EN")))
 
   override def loadAllClasses(): List[BabyClass] = {
     list
@@ -30,7 +31,8 @@ class ClassesDao @Inject()(collection: MongoCollection[BabyClass]) extends Class
 
   override def addClass(babyClass: BabyClass): Future[String] = {
     list = babyClass +: list
-    Future.successful("Add new baby class")
+    println(s"Adding new class: $babyClass")
+    Future.successful(s"Add new baby class $babyClass")
   }
 
 //  override def loadAllClasses(): List[BabyClass] = {
