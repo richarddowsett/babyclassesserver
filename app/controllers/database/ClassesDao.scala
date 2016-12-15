@@ -22,8 +22,7 @@ trait ClassesDaoLike {
 @Singleton
 class ClassesDao @Inject()(collection: MongoCollection[BabyClass]) extends ClassesDaoLike {
 
-  var list:List[BabyClass] = List(BabyClass("1234", Category.Baby, "Yoga", Address("5", "Oakland Gardens", Option("Hutton"), "Brentwood", "CM131EN")),
-    BabyClass("4566", Category.Pregnancy, "Yoga", Address("3", "Oakland Gardens", Option("Hutton"), "Brentwood", "CM131EN")))
+  var list:List[BabyClass] = List()
 
   override def loadAllClasses(): List[BabyClass] = {
     list
